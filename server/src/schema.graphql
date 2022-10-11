@@ -2,7 +2,8 @@ type Query {
   team(id: ID!): Team!
   fixture(id: ID!): Fixture!
   event(id: ID!): Event!
-  events: [Event!]!
+  events(finished: Boolean): [Event!]!
+  players: [Player!]!
   player(id: ID, name: String): Player!
   entry(id: ID!): Entry!
   entryHistory(id: ID!): EntryHistory
@@ -84,6 +85,10 @@ type FixtureStats {
 type FixtureStat {
   value: Int
   player: Player
+}
+
+type Players {
+  list: [Player]
 }
 
 type Player {

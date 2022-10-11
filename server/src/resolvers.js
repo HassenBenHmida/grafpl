@@ -1,43 +1,53 @@
-const NodeCache = require('node-cache');
-const axios = require('axios');
+const NodeCache = require("node-cache");
+const axios = require("axios");
 
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 3650 });
-const baseURI = 'https://fantasy.premierleague.com/api';
+const baseURI = "https://fantasy.premierleague.com/api";
 
 //populating cache
 //1.Cache boostrap-static
 
 const request = (url) => {
-  return axios.get(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      'User-Agent': 'graphql-fpl'
-    }
-  })
+  return axios
+    .get(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "graphql-fpl",
+      },
+    })
     .then((response) => {
       return response.data;
-    })
-}
+    });
+};
 
 request(`${baseURI}/bootstrap-static/`).then((json) => {
-  cache.set('events', json.events);
-  cache.set('teams', json.teams);
-  cache.set('players', json.elements);
+  cache.set("events", json.events);
+  cache.set("teams", json.teams);
+  cache.set("players", json.elements);
 });
 
 request(`${baseURI}/bootstrap-static/`).then((json) =>
-  cache.set('fixtures', json)
+  cache.set("fixtures", json)
 );
 
-const getTeam = (id) => {
-  cached = cache.get('teams');
+const getPlayers = () => {
+  cached = cache.get("players");
   if (cached == undefined) {
-    return request(`${baseURI}/bootstrap-static/`).then(
-      (json) => {
-        cache.set('teams', json.teams);
-        return json.teams.find((t) => t.id == id);
-      }
-    );
+    return request(`${baseURI}/bootstrap-static/`).then((json) => {
+      cache.set("players", json.elements);
+      return json.elements;
+    });
+  }
+  return cached;
+};
+
+const getTeam = (id) => {
+  cached = cache.get("teams");
+  if (cached == undefined) {
+    return request(`${baseURI}/bootstrap-static/`).then((json) => {
+      cache.set("teams", json.teams);
+      return json.teams.find((t) => t.id == id);
+    });
   }
   return cached.find((t) => t.id == id);
 };
@@ -48,27 +58,23 @@ const getTeamShortName = async (id) => {
 };
 
 const getPlayer = (id) => {
-  cached = cache.get('players');
+  cached = cache.get("players");
   if (cached == undefined) {
-    return request(`${baseURI}/bootstrap-static/`).then(
-      (json) => {
-        cache.set('players', json.elements);
-        return json.elements.find((p) => p.id == id);
-      }
-    );
+    return request(`${baseURI}/bootstrap-static/`).then((json) => {
+      cache.set("players", json.elements);
+      return json.elements.find((p) => p.id == id);
+    });
   }
   return cached.find((p) => p.id == id);
 };
 
 const getPlayerByName = (web_name) => {
-  cached = cache.get('players');
+  cached = cache.get("players");
   if (cached == undefined) {
-    return request(`${baseURI}/bootstrap-static/`).then(
-      (json) => {
-        cache.set('players', json.elements);
-        return json.elements.find((p) => p.web_name === web_name);
-      }
-    );
+    return request(`${baseURI}/bootstrap-static/`).then((json) => {
+      cache.set("players", json.elements);
+      return json.elements.find((p) => p.web_name === web_name);
+    });
   }
   return cached.find((p) => p.web_name == web_name);
 };
@@ -77,46 +83,46 @@ const resolvers = {
   Query: {
     event: (_, args) => {
       const { id } = args;
-      cached = cache.get('events');
+      cached = cache.get("events");
       if (cached == undefined) {
-        return request(`${baseURI}/bootstrap-static/`).then(
-          (json) => {
-            cache.set('events', json.events);
-            return json.events.find((g) => g.id == id);
-          }
-        );
+        return request(`${baseURI}/bootstrap-static/`).then((json) => {
+          cache.set("events", json.events);
+          return json.events.find((g) => g.id == id);
+        });
       }
       return cached.find((g) => g.id == id);
     },
 
-    events: () => {
-      cached = cache.get('events');
+    events: (_, args) => {
+      cached = cache.get("events");
+      const { finished } = args;
       if (cached == undefined) {
-        return request(`${baseURI}/bootstrap-static/`).then(
-          (json) => {
-            cache.set('events', json);
-            return json;
-          }
-        );
+        return request(`${baseURI}/bootstrap-static/`).then((json) => {
+          cache.set(
+            "events",
+            json.filter((event) => event.finished === finished)
+          );
+          return json;
+        });
       }
-      return cached;
+      return cached.filter((event) => event.finished === finished);
     },
 
     team: (_, args) => getTeam(args.id),
 
     fixture: (_, args) => {
       const { id } = args;
-      cached = cache.get('fixtures');
+      cached = cache.get("fixtures");
       if (cached == undefined) {
-        return request(`${baseURI}/bootstrap-static/`).then(
-          (json) => {
-            cache.set('fixtures', json);
-            return json.find((f) => f.id == id);
-          }
-        );
+        return request(`${baseURI}/bootstrap-static/`).then((json) => {
+          cache.set("fixtures", json);
+          return json.find((f) => f.id == id);
+        });
       }
       return cached.find((f) => f.id == id);
     },
+
+    players: (_, args) => getPlayers(),
 
     player: (_, args) =>
       args.id ? getPlayer(args.id) : getPlayerByName(args.name),
@@ -137,34 +143,34 @@ const resolvers = {
     },
 
     picks: async (_, args) => {
-      return await request(`${baseURI}/entry/${args.entry}/event/${args.event}/picks/`);
+      return await request(
+        `${baseURI}/entry/${args.entry}/event/${args.event}/picks/`
+      );
     },
 
     playerSummary: async (_, args) => {
-      return await request(`${baseURI}/element-summary/${args.id}/`)
+      return await request(`${baseURI}/element-summary/${args.id}/`);
     },
   },
 
   Team: {
     players: (parent) => {
       const { id } = parent;
-      cached = cache.get('players');
-      if (cache.get('players') == undefined) {
-        return request(`${baseURI}/bootstrap-static/`).then(
-          (json) => {
-            cache.set('players', json.elements);
-            return json.elements.filter((p) => p.team == id);
-          }
-        );
+      cached = cache.get("players");
+      if (cache.get("players") == undefined) {
+        return request(`${baseURI}/bootstrap-static/`).then((json) => {
+          cache.set("players", json.elements);
+          return json.elements.filter((p) => p.team == id);
+        });
       }
       return cached.filter((p) => p.team == id);
     },
     fixtures: (parent) => {
       const { id } = parent;
-      cached = cache.get('fixtures');
+      cached = cache.get("fixtures");
       if (cached == undefined) {
         return request(`${baseURI}/fixtures/`).then((json) => {
-          cache.set('fixtures', json);
+          cache.set("fixtures", json);
           return json.filter((x) => x.team_a == id || x.team_a == id);
         });
       }
@@ -197,10 +203,10 @@ const resolvers = {
     most_vice_captained: (parent) => getPlayer(parent.most_transferred_in),
     fixtures: (parent) => {
       const { id } = parent;
-      const cached = cache.get('fixtures');
+      const cached = cache.get("fixtures");
       if (cached == undefined) {
         return request(`${baseURI}/fixtures/`).then((json) => {
-          cache.set('fixtures', json);
+          cache.set("fixtures", json);
           return json.filter((f) => f.event == id);
         });
       }
@@ -215,7 +221,9 @@ const resolvers = {
   EventHistory: {
     event: (parent) => {
       const id = parent.event;
-      return request(`${baseURI}/bootstrap-static/`).then((json) => json.events.find((g) => g.id == id));
+      return request(`${baseURI}/bootstrap-static/`).then((json) =>
+        json.events.find((g) => g.id == id)
+      );
     },
   },
 

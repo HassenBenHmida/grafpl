@@ -1,14 +1,28 @@
+import { useQuery } from '@apollo/client';
 import { useState } from 'react';
+import AsyncSelect from 'react-select/async';
 
-import Player from './Player';
+import { GET_PLAYER } from '../graphql/queries';
+import { getOptions as players } from '../graphql/util';
 
 function Compare() {
-  const [name, setName] = useState('Haaland');
+  const [selected, setSelected] = useState('Haaland');
+  const { data, loading, error } = useQuery(GET_PLAYER, {
+    variables: { name: selected },
+  });
+
+  if (loading) return <p>Loading ...</p>;
+  console.log(data.player);
 
   return (
     <div>
-      <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-      {name ? <Player name={name} /> : null}
+      <AsyncSelect
+        loadOptions={players}
+        onChange={(opt: any) => setSelected(opt.value)}
+        defaultOptions
+      />
+      {selected &&
+        `${selected} have scored ${data.player.goals_scored} and assisted ${data.player.assists}`}
     </div>
   );
 }

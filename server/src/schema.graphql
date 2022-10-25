@@ -3,7 +3,7 @@ type Query {
   fixture(id: ID!): Fixture!
   event(id: ID!): Event!
   events(finished: Boolean): [Event!]!
-  players: [Player!]!
+  players(limit: Int, filter: String): [Player!]!
   player(id: ID, name: String): Player!
   entry(id: ID!): Entry!
   entryHistory(id: ID!): EntryHistory
@@ -128,6 +128,7 @@ type Player {
   web_name: String!
   minutes: Int!
   goals_scored: Int!
+  assists: Int!
   clean_sheets: Int!
   goals_conceded: Int!
   own_goals: Int!

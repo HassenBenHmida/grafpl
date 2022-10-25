@@ -30,15 +30,27 @@ request(`${baseURI}/bootstrap-static/`).then((json) =>
   cache.set("fixtures", json)
 );
 
-const getPlayers = () => {
+const getPlayers = (limit, filter) => {
   cached = cache.get("players");
+  let filtered_players = [];
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
       cache.set("players", json.elements);
-      return json.elements;
+      if (filter) {
+        filtered_players = json.elements.filter((player) =>
+          player.web_name.toLowerCase().includes(filter.toLowerCase())
+        );
+      }
+      return limit ? filtered_players.slice(0, limit) : filtred;
     });
   }
-  return cached;
+  if (filter) {
+    filtered_players = cached.filter((player) =>
+      player.web_name.toLowerCase().includes(filter.toLowerCase())
+    );
+    return limit ? filtered_players.slice(0, limit) : filtered_players;
+  }
+  return limit ? cached.slice(0, limit) : cached;
 };
 
 const getTeam = (id) => {
@@ -122,7 +134,7 @@ const resolvers = {
       return cached.find((f) => f.id == id);
     },
 
-    players: (_, args) => getPlayers(),
+    players: (_, args) => getPlayers(args.limit, args.filter),
 
     player: (_, args) =>
       args.id ? getPlayer(args.id) : getPlayerByName(args.name),

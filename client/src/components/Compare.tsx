@@ -12,7 +12,8 @@ function Compare() {
   });
 
   if (loading) return <p>Loading ...</p>;
-  console.log(data.player);
+
+  if (error) return 'An error has occurred: ' + error.message;
 
   return (
     <div>

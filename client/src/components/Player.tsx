@@ -1,23 +1,18 @@
-import { useQuery } from '@apollo/client';
-
-import { GET_PLAYER } from '../graphql/queries';
+import { Pick } from '../@types';
 
 type Props = {
-  name: string;
+  info: Pick;
 };
 
-function Player({ name }: Props) {
-  const { loading, error, data } = useQuery(GET_PLAYER, {
-    variables: { name },
-  });
-
-  if (loading) return <p>LOADING...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
+function Player({ info }: Props) {
   return (
     <div>
-      Hello {data.player.first_name} {data.player.second_name}
-      <p>You have scored {data.player.goals_scored} goals so far</p>
+      <div className="name">
+        {info.player.web_name} {info.is_captain && <strong>C</strong>}
+      </div>
+      <div className="points">
+        {info.is_captain ? info.player.event_points * 2 : info.player.event_points}
+      </div>
     </div>
   );
 }

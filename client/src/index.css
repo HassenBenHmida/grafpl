@@ -9,3 +9,33 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+#root {
+  text-align: center;
+}
+
+.formation {
+  min-height: 270px;
+  background: url('./assets/pitch-default.dab51b01.svg') center top / 625px 460px
+    no-repeat;
+  padding-top: 1.5rem;
+}
+
+.position {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.position .name {
+  color: #fff;
+  background-color: rgb(55, 0, 60);
+  padding: 0 0.5rem;
+}
+
+.position .points {
+  background-color: #ffffff75;
+}

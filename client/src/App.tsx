@@ -1,10 +1,11 @@
-import Compare from './components/Compare';
+import './index.css';
+
+import HomePage from './pages/HomePage';
 
 function App() {
   return (
     <div className="App">
-      <Compare />
-      {/* <Compare /> */}
+      <HomePage />
     </div>
   );
 }

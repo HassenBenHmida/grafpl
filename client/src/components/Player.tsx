@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import { Pick } from '../@types';
-import { getPlayerLivePoints } from '../graphql/util';
+import {
+  getLastGameweek,
+  getPlayerLivePoints,
+  getPlayerTotalPoints,
+} from '../graphql/util';
 
 type Props = {
   info: Pick;
@@ -13,8 +17,14 @@ function Player({ info, fixture }: Props) {
 
   const playerPoints = async () => {
     if (fixture) {
-      const playerPoints = await getPlayerLivePoints(info.player.id, fixture);
-      setPoints(parseInt(playerPoints.stats.total_points));
+      const lastGameweek = await getLastGameweek();
+      // const playerPoints = await getPlayerLivePoints(info.player.id, fixture);
+      const playerPoints = await getPlayerTotalPoints(
+        info.player.id,
+        fixture,
+        lastGameweek,
+      );
+      setPoints(playerPoints);
     }
   };
 

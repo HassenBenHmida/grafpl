@@ -1,6 +1,8 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 
 import {
+  GET_PLAYED_FIXTURES,
+  GET_PLAYER,
   GET_PLAYER_LIVE_STATS,
   GET_PLAYERS_NAMES,
   GET_TEAM,
@@ -53,14 +55,50 @@ export const getPicksByFixture = async (id: string, fixture: string) => {
   }
 };
 
-export const getPlayerLivePoints = async (id: number, fixture: string) => {
+export const getPlayerLivePoints = async (id: number, fixture: number) => {
   try {
     const { data } = await client.query({
       query: GET_PLAYER_LIVE_STATS,
-      variables: { player: id, event: parseInt(fixture) },
+      variables: { player: id, event: fixture },
     });
     return data.live;
   } catch (error) {
     return error;
   }
+};
+
+export const getLastGameweek = async () => {
+  try {
+    const { data } = await client.query({
+      query: GET_PLAYED_FIXTURES,
+    });
+    return data.events.at(-1).id;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getPlayerDetails = async (id: number) => {
+  const { data } = await client.query({
+    query: GET_PLAYER,
+    variables: { id: id },
+  });
+  return data.player;
+};
+
+export const getPlayerTotalPoints = async (id: number, start: string, end: string) => {
+  // let total = 0;
+  // for (let i = parseInt(start); i <= parseInt(end); i++) {
+  //   const player = await getPlayerLivePoints(id, i);
+  //   total += player.stats.total_points;
+  // }
+  let { total_points } = await getPlayerDetails(id);
+  if (parseInt(start) > 1) {
+    for (let i = 1; i < parseInt(start); i++) {
+      const player = await getPlayerLivePoints(id, i);
+      total_points -= player.stats.total_points;
+    }
+  }
+
+  return total_points;
 };

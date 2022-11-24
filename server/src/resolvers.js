@@ -112,12 +112,18 @@ const resolvers = {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
           cache.set(
             "events",
-            json.filter((event) => event.finished === finished)
+            json.events.filter((event) =>
+              finished ? event.finished === finished : event
+            )
           );
-          return json;
+          return json.events.filter((event) =>
+            finished ? event.finished === finished : event
+          );
         });
       }
-      return cached.filter((event) => event.finished === finished);
+      return cached.filter((event) =>
+        finished ? event.finished === finished : event
+      );
     },
 
     team: (_, args) => getTeam(args.id),

@@ -9,14 +9,14 @@ export const GET_PLAYERS_NAMES = gql`
 `;
 
 export const GET_PLAYER = gql`
-  query ($name: String!) {
-    player(name: $name) {
-      code
-      first_name
-      second_name
+  query ($id: ID) {
+    player(id: $id) {
       id
+      code
+      web_name
       goals_scored
       assists
+      total_points
     }
   }
 `;
@@ -63,6 +63,15 @@ export const GET_PLAYER_LIVE_STATS = gql`
       stats {
         total_points
       }
+    }
+  }
+`;
+
+export const GET_PLAYED_FIXTURES = gql`
+  query {
+    events(finished: true) {
+      id
+      name
     }
   }
 `;

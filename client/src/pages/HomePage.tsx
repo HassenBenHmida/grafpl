@@ -1,6 +1,6 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Entry, Picks } from '../@types';
 import Formation from '../components/Formation';
@@ -12,13 +12,9 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [fixture, setFixture] = useState('');
   const [teamID, setTeamID] = useState('');
-  // const fixtureRef = useRef<HTMLInputElement>(null);
-  // const teamRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // const teamID = teamRef.current?.value;
-    // const fixture = fixtureRef.current?.value;
     if (teamID && fixture) {
       setLoading(true);
       const team = await getTeamByID(teamID);

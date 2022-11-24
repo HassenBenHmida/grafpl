@@ -10,13 +10,15 @@ const HomePage = () => {
   const [team, setTeam] = useState<Entry>();
   const [teamPicks, setTeamPicks] = useState<Picks>();
   const [loading, setLoading] = useState(false);
-  const fixtureRef = useRef<HTMLInputElement>(null);
-  const teamRef = useRef<HTMLInputElement>(null);
+  const [fixture, setFixture] = useState('');
+  const [teamID, setTeamID] = useState('');
+  // const fixtureRef = useRef<HTMLInputElement>(null);
+  // const teamRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const teamID = teamRef.current?.value;
-    const fixture = fixtureRef.current?.value;
+    // const teamID = teamRef.current?.value;
+    // const fixture = fixtureRef.current?.value;
     if (teamID && fixture) {
       setLoading(true);
       const team = await getTeamByID(teamID);
@@ -33,19 +35,31 @@ const HomePage = () => {
     <div>
       <h1>Fantasy is a time waste</h1>
       <form onSubmit={(e) => handleSubmit(e)}>
-        <input ref={teamRef} type="number" placeholder="Team ID" required />
-        <input ref={fixtureRef} type="number" placeholder="fixture" required />
+        <input
+          type="number"
+          value={teamID}
+          onChange={(e) => setTeamID(e.target.value)}
+          placeholder="Team ID"
+          required
+        />
+        <input
+          type="number"
+          value={fixture}
+          placeholder="fixture"
+          onChange={(e) => setFixture(e.target.value)}
+          required
+        />
         <button type="submit">Search Team</button>
       </form>
       {team && (
         <div>
-          {team.name} team as of fixture {fixtureRef.current?.value}
+          {team.name} team as of fixture {fixture}
         </div>
       )}
       {teamPicks && (
         <div>
           Team Picks:
-          <Formation team={teamPicks} />
+          <Formation team={teamPicks} fixture={fixture} />
         </div>
       )}
     </div>

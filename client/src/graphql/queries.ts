@@ -53,3 +53,16 @@ export const GET_TEAM_PICKS = gql`
     }
   }
 `;
+
+export const GET_PLAYER_LIVE_STATS = gql`
+  query ($player: ID!, $event: Int!) {
+    live(id: $player, event: $event) {
+      player {
+        web_name
+      }
+      stats {
+        total_points
+      }
+    }
+  }
+`;

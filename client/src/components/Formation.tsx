@@ -5,23 +5,23 @@ import Player from './Player';
 
 type Props = {
   team: Picks;
+  fixture: string | undefined;
 };
 
-const Formation = ({ team }: Props) => {
+const Formation = ({ team, fixture }: Props) => {
   const positions: Array<Pick[]> = [];
   // Sort by position and exclude benched players
   team.picks.slice(0, 11).forEach((pick) => {
     const i = pick.player.element_type - 1;
     positions[i] = positions[i] ? [...positions[i], pick] : [pick];
   });
-  console.log(positions);
 
   return (
     <div className="formation">
       {positions.map((position, i) => (
         <div key={i} className="position">
           {position.map((pick) => (
-            <Player key={pick.player.id} info={pick} />
+            <Player key={pick.player.id} info={pick} fixture={fixture} />
           ))}
         </div>
       ))}

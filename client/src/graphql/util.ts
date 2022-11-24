@@ -1,6 +1,11 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 
-import { GET_PLAYERS_NAMES, GET_TEAM, GET_TEAM_PICKS } from './queries';
+import {
+  GET_PLAYER_LIVE_STATS,
+  GET_PLAYERS_NAMES,
+  GET_TEAM,
+  GET_TEAM_PICKS,
+} from './queries';
 
 export const client = new ApolloClient({
   uri: 'http://localhost:4000/',
@@ -43,6 +48,18 @@ export const getPicksByFixture = async (id: string, fixture: string) => {
       variables: { entry: parseInt(id), event: parseInt(fixture) },
     });
     return data.picks;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getPlayerLivePoints = async (id: number, fixture: string) => {
+  try {
+    const { data } = await client.query({
+      query: GET_PLAYER_LIVE_STATS,
+      variables: { player: id, event: parseInt(fixture) },
+    });
+    return data.live;
   } catch (error) {
     return error;
   }

@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 
 import {
+  GET_OVERALL_POINTS_BY_FIXTURE,
   GET_PLAYED_FIXTURES,
   GET_PLAYER,
   GET_PLAYER_LIVE_STATS,
@@ -84,6 +85,14 @@ export const getPlayerDetails = async (id: number) => {
     variables: { id: id },
   });
   return data.player;
+};
+
+export const getOverallPoints = async (teamID: string, fixture: string) => {
+  const { data } = await client.query({
+    query: GET_OVERALL_POINTS_BY_FIXTURE,
+    variables: { entry: parseInt(teamID), event: parseInt(fixture) },
+  });
+  return data.picks;
 };
 
 export const getPlayerTotalPoints = async (id: number, start: string, end: string) => {

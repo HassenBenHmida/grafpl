@@ -75,3 +75,15 @@ export const GET_PLAYED_FIXTURES = gql`
     }
   }
 `;
+
+export const GET_OVERALL_POINTS_BY_FIXTURE = gql`
+  query ($entry: Int!, $event: Int!) {
+    picks(entry: $entry, event: $event) {
+      active_chip
+      entry_history {
+        points
+        total_points
+      }
+    }
+  }
+`;

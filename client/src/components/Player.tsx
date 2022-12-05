@@ -10,9 +10,10 @@ import {
 type Props = {
   info: Pick;
   fixture: string | undefined;
+  handleTotal: React.Dispatch<React.SetStateAction<number>>;
 };
 
-function Player({ info, fixture }: Props) {
+function Player({ info, fixture, handleTotal }: Props) {
   const [points, setPoints] = useState<number>();
 
   const playerPoints = async () => {
@@ -25,6 +26,7 @@ function Player({ info, fixture }: Props) {
         lastGameweek,
       );
       setPoints(playerPoints);
+      handleTotal((prev) => prev + playerPoints);
     }
   };
 

@@ -39,3 +39,9 @@ code {
 .position .points {
   background-color: #ffffff75;
 }
+
+.total-points {
+  font-size: larger;
+  font-weight: 700;
+  color: rgb(55, 0, 60);
+}

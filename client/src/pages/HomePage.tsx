@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { Entry, Picks } from '../@types';
 import Formation from '../components/Formation';
-import { getPicksByFixture, getTeamByID } from '../graphql/util';
+import { getOverallPoints, getPicksByFixture, getTeamByID } from '../graphql/util';
 
 const HomePage = () => {
   const [team, setTeam] = useState<Entry>();
@@ -12,6 +12,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [fixture, setFixture] = useState('');
   const [teamID, setTeamID] = useState('');
+  const [totalPoints, setTotalPoints] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,9 +20,13 @@ const HomePage = () => {
       setLoading(true);
       const team = await getTeamByID(teamID);
       const teamPicks = await getPicksByFixture(teamID, fixture);
+      const teamPoints = await getOverallPoints(teamID, fixture);
       setTeamPicks(teamPicks);
       setTeam(team);
       setLoading(false);
+      setTotalPoints(
+        teamPoints.entry_history.total_points - teamPoints.entry_history.points,
+      );
     }
   };
 
@@ -29,7 +34,7 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1>Fantasy is a time waste</h1>
+      <h1>Did You Waste Your Time?</h1>
       <form onSubmit={(e) => handleSubmit(e)}>
         <input
           type="number"
@@ -47,15 +52,13 @@ const HomePage = () => {
         />
         <button type="submit">Search Team</button>
       </form>
-      {team && (
-        <div>
-          {team.name} team as of fixture {fixture}
-        </div>
-      )}
+      {team && <strong>{team.name}</strong>}
       {teamPicks && (
         <div>
-          Team Picks:
-          <Formation team={teamPicks} fixture={fixture} />
+          Your Team Points would have been:
+          <div className="total-points">{totalPoints}</div>
+          Team Picks points since fixture {fixture}:
+          <Formation team={teamPicks} fixture={fixture} handleTotal={setTotalPoints} />
         </div>
       )}
     </div>

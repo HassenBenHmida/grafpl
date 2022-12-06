@@ -1,33 +1,23 @@
-// const { GraphQLServer } = require("graphql-yoga");
-// const resolvers = require("./resolvers");
+import path, { dirname } from "path";
+import * as fs from "fs";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import resolvers from "./resolvers.js";
+import { fileURLToPath } from "url";
 
-// const server = new GraphQLServer({
-//   typeDefs: "src/schema.graphql",
-//   resolvers
-// });
-
-// server.start(() =>
-//   console.log(`The server is running on http://localhost:4000`)
-// );
-
-const path = require("path");
-const fs = require("fs");
-const { createServer } = require("node:http");
-const { createYoga, createSchema } = require("graphql-yoga");
-const resolvers = require("./resolvers");
-
-// Create a Yoga instance with a GraphQL schema.
-const yoga = createYoga({
-  schema: createSchema({
-    typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf-8"),
-    resolvers,
-  }),
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const server = new ApolloServer({
+  typeDefs: fs.readFileSync(path.join(__dirname, "schema.graphql"), "utf-8"),
+  resolvers,
+  introspection: true,
+  cors: {
+    origin: "*",
+    credentials: true,
+  },
 });
 
-// Pass it into a server to hook into request handlers.
-const server = createServer(yoga);
-
-// Start the server and you're done!
-server.listen(4000, () => {
-  console.info("Server is running on http://localhost:4000/graphql");
+const { url } = await startStandaloneServer(server, {
+  listen: { port: 4000 },
 });
+
+console.log(`🚀  Server ready at: ${url}`);

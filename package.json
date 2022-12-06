@@ -1,0 +1,33 @@
+{
+  "name": "grafpl",
+  "version": "1.0.0",
+  "description": "Did you waste time changing fantasy team squad? ",
+  "main": "server/src/index.js",
+  "scripts": {
+    "start": "node server/src/index.js",
+    "server": "cross-env NODE_ENV=production node server/src/index.js --ignore client",
+    "client": "npm run serve --prefix client",
+    "build": "npm run build --prefix client",
+    "dev": "concurrently  \"npm start\" \"npm run dev --prefix client\"",
+    "prod": "concurrently  \"npm start\" \"npm run build --prefix client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HassenBenHmida/grafpl.git"
+  },
+  "keywords": [
+    "fpl",
+    "grqphql",
+    "react"
+  ],
+  "author": "Hassen BH",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HassenBenHmida/grafpl/issues"
+  },
+  "homepage": "https://github.com/HassenBenHmida/grafpl#readme",
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "cross-env": "^7.0.3"
+  }
+}

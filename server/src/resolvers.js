@@ -1,5 +1,5 @@
-const NodeCache = require("node-cache");
-const axios = require("axios");
+import NodeCache from "node-cache";
+import axios from "axios";
 
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 3650 });
 const baseURI = "https://fantasy.premierleague.com/api";
@@ -31,7 +31,7 @@ request(`${baseURI}/bootstrap-static/`).then((json) =>
 );
 
 const getPlayers = (limit, filter) => {
-  cached = cache.get("players");
+  const cached = cache.get("players");
   let filtered_players = [];
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
@@ -54,7 +54,7 @@ const getPlayers = (limit, filter) => {
 };
 
 const getTeam = (id) => {
-  cached = cache.get("teams");
+  const cached = cache.get("teams");
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
       cache.set("teams", json.teams);
@@ -70,7 +70,7 @@ const getTeamShortName = async (id) => {
 };
 
 const getPlayer = (id) => {
-  cached = cache.get("players");
+  const cached = cache.get("players");
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
       cache.set("players", json.elements);
@@ -81,7 +81,7 @@ const getPlayer = (id) => {
 };
 
 const getPlayerByName = (web_name) => {
-  cached = cache.get("players");
+  const cached = cache.get("players");
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
       cache.set("players", json.elements);
@@ -95,7 +95,7 @@ const resolvers = {
   Query: {
     event: (_, args) => {
       const { id } = args;
-      cached = cache.get("events");
+      const cached = cache.get("events");
       if (cached == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
           cache.set("events", json.events);
@@ -106,7 +106,7 @@ const resolvers = {
     },
 
     events: (_, args) => {
-      cached = cache.get("events");
+      const cached = cache.get("events");
       const { finished } = args;
       if (cached == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
@@ -130,7 +130,7 @@ const resolvers = {
 
     fixture: (_, args) => {
       const { id } = args;
-      cached = cache.get("fixtures");
+      const cached = cache.get("fixtures");
       if (cached == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
           cache.set("fixtures", json);
@@ -174,7 +174,7 @@ const resolvers = {
   Team: {
     players: (parent) => {
       const { id } = parent;
-      cached = cache.get("players");
+      const cached = cache.get("players");
       if (cache.get("players") == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
           cache.set("players", json.elements);
@@ -185,7 +185,7 @@ const resolvers = {
     },
     fixtures: (parent) => {
       const { id } = parent;
-      cached = cache.get("fixtures");
+      const cached = cache.get("fixtures");
       if (cached == undefined) {
         return request(`${baseURI}/fixtures/`).then((json) => {
           cache.set("fixtures", json);
@@ -281,4 +281,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

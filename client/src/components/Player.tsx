@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { Pick } from '../@types';
-import {
-  getLastGameweek,
-  getPlayerLivePoints,
-  getPlayerTotalPoints,
-} from '../graphql/util';
+import { getLastGameweek, getPlayerTotalPoints } from '../graphql/util';
 
 type Props = {
   info: Pick;

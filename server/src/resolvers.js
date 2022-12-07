@@ -65,7 +65,7 @@ const getTeam = (id) => {
 };
 
 const getTeamShortName = async (id) => {
-  team = await getTeam(id);
+  const team = await getTeam(id);
   return await team.short_name;
 };
 
@@ -155,9 +155,8 @@ const resolvers = {
     },
 
     live: async (_, args) => {
-      data = await request(`${baseURI}/event/${args.event}/live/`);
-      elements = data.elements;
-      return elements.find((el) => el.id == args.id);
+      const data = await request(`${baseURI}/event/${args.event}/live/`);
+      return data.elements.find((el) => el.id == args.id);
     },
 
     picks: async (_, args) => {

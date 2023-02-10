@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { Entry, Picks } from '../@types';
 import Formation from '../components/Formation';
+import LoaderOverlay from '../components/LoaderOverlay';
 import { getOverallPoints, getPicksByFixture, getTeamByID } from '../graphql/util';
 
 const HomePage = () => {
@@ -28,28 +29,44 @@ const HomePage = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoaderOverlay message="Please wait" />;
 
   return (
     <div>
       <h1>Did You Waste Your Time?</h1>
-      <form onSubmit={(e) => handleSubmit(e)}>
-        <input
-          type="number"
-          value={teamID}
-          onChange={(e) => setTeamID(e.target.value)}
-          placeholder="Team ID"
-          required
-        />
-        <input
-          type="number"
-          value={fixture}
-          placeholder="fixture"
-          onChange={(e) => setFixture(e.target.value)}
-          required
-        />
-        <button type="submit">Search Team</button>
-      </form>
+      <div className="wrapper">
+        <form onSubmit={(e) => handleSubmit(e)}>
+          <div className="group-input">
+            <label htmlFor="team-input">Team ID</label>
+            <input
+              type="number"
+              value={teamID}
+              onChange={(e) => setTeamID(e.target.value)}
+              placeholder="Team ID"
+              name="team-input"
+              min={1}
+              required
+            />
+          </div>
+          <div className="group-input">
+            <label htmlFor="fixture-input">Fixture number</label>
+            <input
+              type="number"
+              value={fixture}
+              placeholder="fixture"
+              name="fixture-input"
+              onChange={(e) => setFixture(e.target.value)}
+              min={1}
+              required
+            />
+          </div>
+          <div className="group-input">
+            <button className="submit" type="submit">
+              Search Team
+            </button>
+          </div>
+        </form>
+      </div>
       {team && <strong>{team.name}</strong>}
       {teamPicks && (
         <div>

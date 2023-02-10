@@ -11,7 +11,7 @@ import {
 } from './queries';
 
 export const client = new ApolloClient({
-  uri: 'http://localhost:4000/',
+  uri: '/api/graphql',
   cache: new InMemoryCache(),
 });
 
@@ -95,13 +95,17 @@ export const getOverallPoints = async (teamID: string, fixture: string) => {
   return data.picks;
 };
 
-export const getPlayerTotalPoints = async (id: number, start: string, end: string) => {
+export const getPlayerTotalPoints = async (
+  id: number,
+  start: string,
+  total_points: number,
+) => {
   // let total = 0;
   // for (let i = parseInt(start); i <= parseInt(end); i++) {
   //   const player = await getPlayerLivePoints(id, i);
   //   total += player.stats.total_points;
   // }
-  let { total_points } = await getPlayerDetails(id);
+
   if (parseInt(start) > 1) {
     for (let i = 1; i < parseInt(start); i++) {
       const player = await getPlayerLivePoints(id, i);

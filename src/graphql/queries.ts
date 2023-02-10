@@ -48,6 +48,7 @@ export const GET_TEAM_PICKS = gql`
           web_name
           event_points
           element_type
+          total_points
         }
       }
     }

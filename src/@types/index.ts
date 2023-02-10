@@ -27,6 +27,7 @@ export type Player = {
   web_name: string;
   element_type: number;
   event_points: number;
+  total_points: number;
 };
 
 export type Pick = {

@@ -1,8 +1,8 @@
-import NodeCache from "node-cache";
-import axios from "axios";
+import axios from 'axios';
+import * as NodeCache from 'node-cache';
 
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 3650 });
-const baseURI = "https://fantasy.premierleague.com/api";
+const baseURI = 'https://fantasy.premierleague.com/api';
 
 //populating cache
 //1.Cache boostrap-static
@@ -11,8 +11,8 @@ const request = (url) => {
   return axios
     .get(url, {
       headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "graphql-fpl",
+        'Content-Type': 'application/json',
+        'User-Agent': 'graphql-fpl',
       },
     })
     .then((response) => {
@@ -21,32 +21,30 @@ const request = (url) => {
 };
 
 request(`${baseURI}/bootstrap-static/`).then((json) => {
-  cache.set("events", json.events);
-  cache.set("teams", json.teams);
-  cache.set("players", json.elements);
+  cache.set('events', json.events);
+  cache.set('teams', json.teams);
+  cache.set('players', json.elements);
 });
 
-request(`${baseURI}/bootstrap-static/`).then((json) =>
-  cache.set("fixtures", json)
-);
+request(`${baseURI}/bootstrap-static/`).then((json) => cache.set('fixtures', json));
 
 const getPlayers = (limit, filter) => {
-  const cached = cache.get("players");
+  const cached = cache.get('players');
   let filtered_players = [];
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
-      cache.set("players", json.elements);
+      cache.set('players', json.elements);
       if (filter) {
         filtered_players = json.elements.filter((player) =>
-          player.web_name.toLowerCase().includes(filter.toLowerCase())
+          player.web_name.toLowerCase().includes(filter.toLowerCase()),
         );
       }
-      return limit ? filtered_players.slice(0, limit) : filtred;
+      return limit ? filtered_players.slice(0, limit) : filtered_players;
     });
   }
   if (filter) {
     filtered_players = cached.filter((player) =>
-      player.web_name.toLowerCase().includes(filter.toLowerCase())
+      player.web_name.toLowerCase().includes(filter.toLowerCase()),
     );
     return limit ? filtered_players.slice(0, limit) : filtered_players;
   }
@@ -54,10 +52,10 @@ const getPlayers = (limit, filter) => {
 };
 
 const getTeam = (id) => {
-  const cached = cache.get("teams");
+  const cached = cache.get('teams');
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
-      cache.set("teams", json.teams);
+      cache.set('teams', json.teams);
       return json.teams.find((t) => t.id == id);
     });
   }
@@ -70,10 +68,10 @@ const getTeamShortName = async (id) => {
 };
 
 const getPlayer = (id) => {
-  const cached = cache.get("players");
+  const cached = cache.get('players');
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
-      cache.set("players", json.elements);
+      cache.set('players', json.elements);
       return json.elements.find((p) => p.id == id);
     });
   }
@@ -81,10 +79,10 @@ const getPlayer = (id) => {
 };
 
 const getPlayerByName = (web_name) => {
-  const cached = cache.get("players");
+  const cached = cache.get('players');
   if (cached == undefined) {
     return request(`${baseURI}/bootstrap-static/`).then((json) => {
-      cache.set("players", json.elements);
+      cache.set('players', json.elements);
       return json.elements.find((p) => p.web_name === web_name);
     });
   }
@@ -95,10 +93,10 @@ const resolvers = {
   Query: {
     event: (_, args) => {
       const { id } = args;
-      const cached = cache.get("events");
+      const cached = cache.get('events');
       if (cached == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
-          cache.set("events", json.events);
+          cache.set('events', json.events);
           return json.events.find((g) => g.id == id);
         });
       }
@@ -106,34 +104,32 @@ const resolvers = {
     },
 
     events: (_, args) => {
-      const cached = cache.get("events");
+      const cached = cache.get('events');
       const { finished } = args;
       if (cached == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
           cache.set(
-            "events",
+            'events',
             json.events.filter((event) =>
-              finished ? event.finished === finished : event
-            )
+              finished ? event.finished === finished : event,
+            ),
           );
           return json.events.filter((event) =>
-            finished ? event.finished === finished : event
+            finished ? event.finished === finished : event,
           );
         });
       }
-      return cached.filter((event) =>
-        finished ? event.finished === finished : event
-      );
+      return cached.filter((event) => (finished ? event.finished === finished : event));
     },
 
     team: (_, args) => getTeam(args.id),
 
     fixture: (_, args) => {
       const { id } = args;
-      const cached = cache.get("fixtures");
+      const cached = cache.get('fixtures');
       if (cached == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
-          cache.set("fixtures", json);
+          cache.set('fixtures', json);
           return json.find((f) => f.id == id);
         });
       }
@@ -142,8 +138,7 @@ const resolvers = {
 
     players: (_, args) => getPlayers(args.limit, args.filter),
 
-    player: (_, args) =>
-      args.id ? getPlayer(args.id) : getPlayerByName(args.name),
+    player: (_, args) => (args.id ? getPlayer(args.id) : getPlayerByName(args.name)),
 
     entry: async (_, args) => {
       const { id } = args;
@@ -160,9 +155,7 @@ const resolvers = {
     },
 
     picks: async (_, args) => {
-      return await request(
-        `${baseURI}/entry/${args.entry}/event/${args.event}/picks/`
-      );
+      return await request(`${baseURI}/entry/${args.entry}/event/${args.event}/picks/`);
     },
 
     playerSummary: async (_, args) => {
@@ -173,10 +166,10 @@ const resolvers = {
   Team: {
     players: (parent) => {
       const { id } = parent;
-      const cached = cache.get("players");
-      if (cache.get("players") == undefined) {
+      const cached = cache.get('players');
+      if (cache.get('players') == undefined) {
         return request(`${baseURI}/bootstrap-static/`).then((json) => {
-          cache.set("players", json.elements);
+          cache.set('players', json.elements);
           return json.elements.filter((p) => p.team == id);
         });
       }
@@ -184,10 +177,10 @@ const resolvers = {
     },
     fixtures: (parent) => {
       const { id } = parent;
-      const cached = cache.get("fixtures");
+      const cached = cache.get('fixtures');
       if (cached == undefined) {
         return request(`${baseURI}/fixtures/`).then((json) => {
-          cache.set("fixtures", json);
+          cache.set('fixtures', json);
           return json.filter((x) => x.team_a == id || x.team_a == id);
         });
       }
@@ -200,8 +193,7 @@ const resolvers = {
 
     team_a: (parent) => getTeam(parent.team_a),
 
-    stats: (parent) =>
-      parent.stats.filter((x) => x.a.length + x.h.length !== 0),
+    stats: (parent) => parent.stats.filter((x) => x.a.length + x.h.length !== 0),
   },
 
   FixtureStat: {
@@ -220,10 +212,10 @@ const resolvers = {
     most_vice_captained: (parent) => getPlayer(parent.most_transferred_in),
     fixtures: (parent) => {
       const { id } = parent;
-      const cached = cache.get("fixtures");
+      const cached = cache.get('fixtures');
       if (cached == undefined) {
         return request(`${baseURI}/fixtures/`).then((json) => {
-          cache.set("fixtures", json);
+          cache.set('fixtures', json);
           return json.filter((f) => f.event == id);
         });
       }
@@ -239,7 +231,7 @@ const resolvers = {
     event: (parent) => {
       const id = parent.event;
       return request(`${baseURI}/bootstrap-static/`).then((json) =>
-        json.events.find((g) => g.id == id)
+        json.events.find((g) => g.id == id),
       );
     },
   },
@@ -252,9 +244,7 @@ const resolvers = {
   Explain: {
     fixture: (parent) => {
       const id = parent.fixture;
-      return request(`${baseURI}/fixtures/`).then((json) =>
-        json.find((f) => f.id == id)
-      );
+      return request(`${baseURI}/fixtures/`).then((json) => json.find((f) => f.id == id));
     },
   },
 

@@ -1,3 +1,4 @@
+export const types = `#graphql
 type Query {
   team(id: ID!): Team!
   fixture(id: ID!): Fixture!
@@ -319,3 +320,4 @@ type PastSeason {
   threat: String!
   ict_index: String!
 }
+`;

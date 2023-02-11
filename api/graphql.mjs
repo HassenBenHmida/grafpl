@@ -1,8 +1,8 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 
-import resolvers from '../src/graphql/resolvers';
-import { types } from '../src/graphql/schema';
+import resolvers from '../src/graphql/resolvers.mjs';
+import { types } from '../src/graphql/schema.mjs';
 
 // const __dirname = dirname(fileURLToPath(import.meta.url));
 const server = new ApolloServer({

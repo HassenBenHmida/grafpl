@@ -1,4 +1,4 @@
-import * as NodeCache from 'node-cache';
+import NodeCache from 'node-cache';
 import fetch from 'node-fetch';
 
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 3650 });

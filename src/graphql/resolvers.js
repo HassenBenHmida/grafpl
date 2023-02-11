@@ -1,5 +1,5 @@
-import axios from 'axios';
 import * as NodeCache from 'node-cache';
+import fetch from 'node-fetch';
 
 const cache = new NodeCache({ stdTTL: 3600, checkperiod: 3650 });
 const baseURI = 'https://fantasy.premierleague.com/api';
@@ -8,16 +8,14 @@ const baseURI = 'https://fantasy.premierleague.com/api';
 //1.Cache boostrap-static
 
 const request = (url) => {
-  return axios
-    .get(url, {
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': 'graphql-fpl',
-      },
-    })
-    .then((response) => {
-      return response.data;
-    });
+  return fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      'User-Agent': 'graphql-fpl',
+    },
+  }).then((response) => {
+    return response.json();
+  });
 };
 
 request(`${baseURI}/bootstrap-static/`).then((json) => {
